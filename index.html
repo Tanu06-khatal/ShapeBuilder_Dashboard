@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard | Shape Builder</title>
+    
+    <!-- Google Fonts for clean typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for simple icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dark-theme">
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container"></div>
+
+    <div class="app-container">
+        
+        <!-- TOP HEADER -->
+        <header class="header card">
+            <div class="header-left">
+                <div class="logo-icon"><i class="fa-solid fa-shapes"></i></div>
+                <div>
+                    <h1>Shape Builder</h1>
+                    <p class="subtitle">Faculty Analytics Dashboard</p>
+                </div>
+            </div>
+            
+            <div class="header-center">
+                <div class="student-management">
+                    <div class="selector-group">
+                        <i class="fa-solid fa-user-graduate"></i>
+                        <select id="student-selector">
+                            <option value="">-- Select Student --</option>
+                        </select>
+                    </div>
+                    <div class="add-group">
+                        <input type="text" id="new-student-name" placeholder="New Student Name...">
+                        <button id="btn-add-student" class="btn btn-secondary"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="status-badge" id="sim-status">
+                    <span class="dot"></span> <span class="status-text">Ready</span>
+                </div>
+                <button id="btn-start" class="btn btn-primary" disabled><i class="fa-solid fa-play"></i> Start Session</button>
+                <button id="btn-logout" class="btn btn-secondary"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                <button id="btn-theme" class="btn btn-icon" title="Toggle Theme"><i class="fa-solid fa-moon"></i></button>
+            </div>
+        </header>
+
+        <!-- FACULTY OVERVIEW SECTION -->
+        <section class="faculty-overview">
+            <div class="overview-card">
+                <i class="fa-solid fa-users"></i>
+                <div class="ov-data">
+                    <div class="ov-label">Total Students</div>
+                    <div class="ov-value" id="fac-total-students">0</div>
+                </div>
+            </div>
+            <div class="overview-card">
+                <i class="fa-solid fa-star"></i>
+                <div class="ov-data">
+                    <div class="ov-label">Best Performing</div>
+                    <div class="ov-value" id="fac-best-student">N/A</div>
+                </div>
+            </div>
+            <div class="overview-card">
+                <i class="fa-solid fa-chart-line"></i>
+                <div class="ov-data">
+                    <div class="ov-label">Class Average Accuracy</div>
+                    <div class="ov-value" id="fac-avg-accuracy">0%</div>
+                </div>
+            </div>
+            <div class="overview-card">
+                <i class="fa-solid fa-shapes"></i>
+                <div class="ov-data">
+                    <div class="ov-label">Total Class Attempts</div>
+                    <div class="ov-value" id="fac-total-attempts">0</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAIN LAYOUT GRID (Disabled until student is selected) -->
+        <main class="dashboard-grid" id="main-dashboard" style="opacity: 0.5; pointer-events: none;">
+
+            <!-- LEFT COLUMN: Interaction & Live Results -->
+            <div class="column-left">
+                
+                <!-- LIVE RESULT CARDS -->
+                <section class="live-stats">
+                    <div class="stat-card" id="card-current-shape">
+                        <div class="stat-label">Current Shape</div>
+                        <div class="stat-value" id="val-shape">None</div>
+                    </div>
+                    <div class="stat-card" id="card-result">
+                        <div class="stat-label">Result</div>
+                        <div class="stat-value" id="val-result">--</div>
+                    </div>
+                </section>
+
+                <section class="mini-stats">
+                    <div class="mini-card">
+                        <div class="mini-label">Total Attempts</div>
+                        <div class="mini-value" id="val-total">0</div>
+                    </div>
+                    <div class="mini-card correct-text">
+                        <div class="mini-label">Correct</div>
+                        <div class="mini-value" id="val-correct">0</div>
+                    </div>
+                    <div class="mini-card wrong-text">
+                        <div class="mini-label">Wrong</div>
+                        <div class="mini-value" id="val-wrong">0</div>
+                    </div>
+                    <div class="mini-card">
+                        <div class="mini-label">Success Rate</div>
+                        <div class="mini-value" id="val-rate">0%</div>
+                    </div>
+                </section>
+
+                <!-- 3x3 NODE BOARD -->
+                <section class="card visualization-panel">
+                    <h2><i class="fa-solid fa-border-all"></i> Shape Visualization</h2>
+                    
+                    <div class="board-container">
+                        <div class="node-grid" id="node-grid">
+                            <!-- 9 nodes will be generated by JS -->
+                        </div>
+                        <canvas id="connection-canvas"></canvas>
+                    </div>
+
+                    <div class="achievements">
+                        <div class="streak-counter" title="Consecutive Correct Answers">
+                            <i class="fa-solid fa-fire"></i> Streak: <span id="val-streak">0</span>
+                        </div>
+                        <div class="badge" id="badge-accuracy" style="opacity: 0.5;">
+                            <i class="fa-solid fa-award"></i> Sharpshooter
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- RIGHT COLUMN: Analytics & History -->
+            <div class="column-right">
+                
+                <!-- ANALYTICS GRAPHS -->
+                <section class="card charts-panel">
+                    <div class="panel-header-row">
+                        <h2><i class="fa-solid fa-chart-pie"></i> Performance Analytics <span id="current-student-label" style="font-weight: 300; font-size: 0.9rem; margin-left: 10px;"></span></h2>
+                        <div>
+                            <button id="btn-export-report" class="btn btn-secondary btn-sm"><i class="fa-solid fa-file-export"></i> Export Report</button>
+                            <button id="btn-reset-student" class="btn btn-secondary btn-sm"><i class="fa-solid fa-trash-can"></i> Reset Data</button>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-grid">
+                        <div class="chart-box">
+                            <h3>Right vs Wrong</h3>
+                            <div class="canvas-wrapper"><canvas id="pieChart"></canvas></div>
+                        </div>
+                        <div class="chart-box">
+                            <h3>Shape Popularity</h3>
+                            <div class="canvas-wrapper"><canvas id="barChart"></canvas></div>
+                        </div>
+                        <div class="chart-box full-width">
+                            <h3>Accuracy Trend (Moving Average)</h3>
+                            <div class="canvas-wrapper"><canvas id="lineChart"></canvas></div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="bottom-split">
+                    <!-- ATTEMPT HISTORY TABLE -->
+                    <section class="card history-panel">
+                        <h2><i class="fa-solid fa-clock-rotate-left"></i> Recent History</h2>
+                        <div class="table-container">
+                            <table id="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Shape</th>
+                                        <th>Result</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rows injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- PERFORMANCE ANALYSIS PANEL -->
+                    <section class="card insights-panel">
+                        <h2><i class="fa-solid fa-lightbulb"></i> Smart Insights</h2>
+                        <ul class="insights-list" id="insights-list">
+                            <li><i class="fa-solid fa-circle-info"></i> Waiting for first attempt...</li>
+                        </ul>
+                    </section>
+                </div>
+                
+            </div>
+        </main>
+    </div>
+
+    <!-- Main Logic Script -->
+    <script src="js/app.js"></script>
+</body>
+</html>
