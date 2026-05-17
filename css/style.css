@@ -422,3 +422,17 @@ td.res-wrong { color: var(--color-wrong); font-weight: 600; }
     font-size: 0.8rem;
 }
 
+/* Toggle Switch Styles */
+.mode-toggle { display: flex; align-items: center; }
+.switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); transition: .4s; }
+.slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; }
+input:checked + .slider { background-color: var(--color-accent); }
+input:focus + .slider { box-shadow: 0 0 1px var(--color-accent); }
+input:checked + .slider:before { transform: translateX(20px); }
+.slider.round { border-radius: 34px; }
+.slider.round:before { border-radius: 50%; }
+
+.status-badge.connected .dot { background: var(--color-correct); box-shadow: 0 0 8px var(--color-correct); }
+.status-badge.disconnected .dot { background: var(--color-wrong); box-shadow: 0 0 8px var(--color-wrong); }

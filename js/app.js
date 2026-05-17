@@ -55,7 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- Setup ---
 function initClock() {
     setInterval(() => {
-        elClock.innerText = new Date().toLocaleTimeString('en-US', {hour12: false});
+        if (elClock) {
+            elClock.innerText = new Date().toLocaleTimeString('en-US', {hour12: false});
+        }
     }, 1000);
 }
 
@@ -240,16 +242,38 @@ function stopSimulation() {
 
 function generateAttempt() {
     if(!currentStudentId) return;
-    const s = students[currentStudentId];
-
     const shapeNames = Object.keys(SHAPES);
     const shapeName = shapeNames[Math.floor(Math.random() * shapeNames.length)];
-    const shapeNodes = SHAPES[shapeName];
-
     const isRight = Math.random() > 0.3; // 70% correct
     
+    // Push the simulated data up to Firebase
+    pushDataToFirebase(students[currentStudentId].name, shapeName, isRight);
+    
+    handleAttempt(students[currentStudentId].name, shapeName, isRight);
+}
+
+function pushDataToFirebase(studentName, shapeName, isRight) {
+    if (window.firebaseAddDoc && window.firebaseCollection && window.firebaseDb) {
+        const shapesRef = window.firebaseCollection(window.firebaseDb, "shapes");
+        window.firebaseAddDoc(shapesRef, {
+            studentName: studentName,
+            shapeName: shapeName,
+            result: isRight ? "RIGHT" : "WRONG",
+            timestamp: new Date().toISOString()
+        }).then(() => console.log("Added to Firebase!")).catch(err => console.error("Firebase Sync Error:", err));
+    }
+}
+
+function handleAttempt(studentName, shapeName, isRight) {
+    if(!currentStudentId) return;
+    const s = students[currentStudentId];
+
+    const shapeNodes = SHAPES[shapeName] || [];
+
     s.total++;
-    s.shapeCounts[shapeName]++;
+    if(s.shapeCounts[shapeName] !== undefined) {
+        s.shapeCounts[shapeName]++;
+    }
     
     if(isRight) {
         s.correct++;

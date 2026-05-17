@@ -216,5 +216,28 @@
 
     <!-- Main Logic Script -->
     <script src="js/app.js"></script>
+
+    <!-- Firebase Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAIvim5kfIBvC4Z84WWP_pE7j3Fx37WsjU",
+            authDomain: "shapebuilderdashboard.firebaseapp.com",
+            projectId: "shapebuilderdashboard",
+            storageBucket: "shapebuilderdashboard.firebasestorage.app",
+            messagingSenderId: "1041012492596",
+            appId: "1:1041012492596:web:05ba797a12ac55912f3d61",
+            measurementId: "G-H8J7899VLL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.firebaseDb = db;
+        window.firebaseCollection = collection;
+        window.firebaseAddDoc = addDoc;
+    </script>
 </body>
 </html>
