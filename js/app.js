@@ -20,18 +20,18 @@ function createStudentProfile(name) {
         streak: 0,
         history: [],
         accuracyHistory: [],
-        shapeCounts: { 'Triangle': 0, 'Square': 0, 'Line': 0, 'Arc': 0, 'Zigzag': 0, 'Circle': 0 }
+        shapeCounts: { 'Right Triangle': 0, 'Equilateral Triangle': 0, 'Scalene Triangle': 0, 'Square': 0, 'Rectangle': 0, 'Pentagon': 0 }
     };
 }
 
 // --- Shape Definitions (Nodes 1-20 circularly) ---
 const SHAPES = {
-    'Triangle': [1, 8, 14],
+    'Right Triangle': [1, 6, 11],
+    'Equilateral Triangle': [1, 8, 14],
+    'Scalene Triangle': [1, 4, 12],
     'Square': [1, 6, 11, 16],
-    'Line': [1, 11],
-    'Arc': [3, 4, 5, 6, 7],
-    'Zigzag': [1, 10, 3, 12],
-    'Circle': [1, 5, 10, 15, 20] // Abstract representation of full circle connectivity
+    'Rectangle': [1, 5, 11, 15],
+    'Pentagon': [1, 5, 9, 13, 17]
 };
 
 // --- DOM Elements ---
@@ -315,10 +315,8 @@ function visualizeShape(nodes, isRight) {
             ctx.lineTo(nodeCoords[i].x, nodeCoords[i].y);
         }
         
-        // If it's a closed shape like Triangle or Square or Circle, close the path
-        if(['Triangle', 'Square', 'Circle'].includes(Object.keys(SHAPES).find(key => SHAPES[key] === nodes))) {
-             ctx.lineTo(nodeCoords[0].x, nodeCoords[0].y);
-        }
+        // All supported shapes are closed polygons, so we always close the path
+        ctx.lineTo(nodeCoords[0].x, nodeCoords[0].y);
         
         ctx.strokeStyle = isRight ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)';
         ctx.lineWidth = 4;
